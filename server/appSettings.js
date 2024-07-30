@@ -23,9 +23,9 @@ const appSettings = () => {
             "version":"3.8"
         },
         "credentials": {
-            "clientId": process.env.AD_CLIENT_ID || "d8c8f9fd-1e14-42e5-ad47-ad07e130c1f0",
-            "tenantId": process.env.AD_TENANT_ID || "e36163ca-8cc6-4cb3-a7c6-7b59514136ea",
-            "clientSecret": process.env.AD_CLIENT_ID_SECRET || "Bhn8Q~SHRL5SKxBjJAIlSSUw9qqMWHo3jdkIQbHj"
+            "clientId": process.env.AD_CLIENT_ID || "",
+            "tenantId": process.env.AD_TENANT_ID || "",
+            "clientSecret": process.env.AD_CLIENT_ID_SECRET || ""
         },
         "settings": {
             "homePageRoute": `${process.env.CLIENT_URL}/validate-user-auth`,
