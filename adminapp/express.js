@@ -25,7 +25,7 @@ module.exports = (app) => {
       contentSecurityPolicy: {
         directives: {
           ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-          "script-src-attr":["'self'", "'unsafe-inline'", "nonce-axismf-custom-nonce"]
+          "script-src-attr":["'self'", "'unsafe-inline'", "nonce-knight-frank-custom-nonce"]
         },
       },
     })

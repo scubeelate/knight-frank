@@ -144,20 +144,9 @@ const PrivateRoute = ({ children, module }: PrivateRouteProps) => {
           </button>
         </div>
         <div className="flex items-center justify-center h-20">
-          {isExpanded ? (
-            // <img
-            //   src="/assets/icons/axis.svg"
-            //   alt="Axis"
-            //   className="w-40 h-20"
-            // />
-            
+          {isExpanded ? (            
             <p className="text-white font-bold">Knight Frank</p>
           ) : (
-            // <img
-            //   src="/assets/icons/axis-small.svg"
-            //   alt="Axis"
-            //   className="w-10"
-            // />
             <p className="text-white font-bold">KF</p>
           )}
         </div>
