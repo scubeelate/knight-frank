@@ -3,3 +3,5 @@ node_modules
 .DS_Store
 server/.env
 webapp/daemon
+server/daemon
+webapp/logs
