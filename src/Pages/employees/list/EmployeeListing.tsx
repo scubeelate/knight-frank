@@ -416,19 +416,12 @@ const EmployeeListing = () => {
             />
 
             <button
-              disabled={CountItems(params) < 1}
-              className={`w-fit px-2 py-1 border ${CountItems(params) >= 1
-                  ? "border-black cursor-pointer"
-                  : "border-[#bbbbbb]"
-                }  `}
+              disabled={false}
+              className={`w-fit px-2 py-1 border border-black cursor-pointer`}
               onClick={handleResetFilters}
             >
               <img
-                src={
-                  CountItems(params) >= 1
-                    ? "/assets/icons/refreshIcon.svg"
-                    : "/assets/icons/disableReset.svg"
-                }
+                src='/assets/icons/refreshIcon.svg'
                 alt=""
               />
             </button>

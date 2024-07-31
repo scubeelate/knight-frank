@@ -4,4 +4,4 @@ node_modules
 server/.env
 webapp/daemon
 server/daemon
-webapp/logs
+server/logs

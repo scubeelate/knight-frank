@@ -56,6 +56,10 @@ module.exports = (app) => {
     next();
   });
 
+  app.get('/',(req, res, next) => {
+    return res.send('Api Server is available.')
+  })
+
   app.use((req, res, next) => {
     const csrfTokenKey = getCsrfTokenId(req);
 

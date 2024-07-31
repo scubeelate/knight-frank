@@ -23,9 +23,9 @@ const appSettings = () => {
             "version":"3.8"
         },
         "credentials": {
-            "clientId": process.env.AD_CLIENT_ID || "",
-            "tenantId": process.env.AD_TENANT_ID || "",
-            "clientSecret": process.env.AD_CLIENT_ID_SECRET || ""
+            "clientId": process.env.AD_CLIENT_ID || "--",
+            "tenantId": process.env.AD_TENANT_ID || "--",
+            "clientSecret": process.env.AD_CLIENT_ID_SECRET || "--"
         },
         "settings": {
             "homePageRoute": `${process.env.CLIENT_URL}/validate-user-auth`,
