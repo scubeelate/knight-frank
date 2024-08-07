@@ -1,37 +1,41 @@
+
 "use strict";
 
-const {
-  GetSecretValueCommand,
-  SecretsManagerClient,
-} = require("@aws-sdk/client-secrets-manager");
-const client = new SecretsManagerClient({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
+const { DefaultAzureCredential } = require("@azure/identity");
+const { SecretClient } = require("@azure/keyvault-secrets");
 
+const credential = new DefaultAzureCredential();
+// Build the URL to reach your key vault
+const url = process.env.KEY_VAULT_URL;
+// create our secrets client and connect to the service
+const client = new SecretClient(url, credential);
+const keyAttributes= [
+{
+    key:'LDAPS_URL',
+    name:'LDAPSURL'
+},
+{
+    key:'LDAPS_USER_NAME',
+    name:'LDAPSUSERNAME'
+},
+{
+    key:'APP_SECRET_KEY',
+    name:'LDAPPASSWORD',
+}
+]
 exports.loadKeys = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // const secretsProperties = ["rds!db-2c1e61ba-bfee-4cc2-be3a-281e4e98b4a3"];
-      // for (const secretsProperty of secretsProperties) {
-      //   const latestSecret = await client.send(
-      //     new GetSecretValueCommand({
-      //       SecretId: secretsProperty,
-      //     })
-      //   );
-      //   if(secretsProperty === 'rds!db-2c1e61ba-bfee-4cc2-be3a-281e4e98b4a3') {
-      //     const secrets = JSON.parse(latestSecret['SecretString']);
-      //     process.env['DBUSER'] = secrets.username
-      //     process.env['DBPASS'] = secrets.password
-      //   } else {
-      //     process.env[secretsProperty] = latestSecret['SecretString'];
-      //   }
-       
-      // }
-      resolve(true);
-    } catch (e) {
-      reject(e);
-    }
-  });
-};
+    return new Promise(async (resolve, reject) => {
+        try {
+            // const secretsProperties = keyAttributes
+            // for (const secretsProperty of secretsProperties) {
+            //     const latestSecret = await client.getSecret(secretsProperty.name);
+            //     process.env[secretsProperty.key] = latestSecret.value
+            // }
+            resolve(true)
+        } catch (e) {
+            console.log(e)
+            reject(e)
+        }
+
+    })
+}

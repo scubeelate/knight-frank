@@ -171,7 +171,8 @@ export const Layout = () => (
         <Route path="/login" element={<Login />} />
 
         <Route path="un-authorized" element={<UnAuthorizedAccess />} />
-        <Route path="validate-sso-token" element={<ValidateAuthToken />} />
+        <Route path="/auth/validate-sso-token" element={<ValidateAuthToken />} />
+        <Route path="/auth/logout" element={<ValidateAuthToken />} />
       </Routes>
     </Suspense>
   </div>
