@@ -78,9 +78,9 @@ class LoginController {
         });
       }
 
-      if (NodeCache.get('LOGGED_IN'+user.id)) {
-        return response.status(400).json({ message: 'User session is already active. Please logout from there and login here.' });
-      }
+      // if (NodeCache.get('LOGGED_IN'+user.id)) {
+      //   return response.status(400).json({ message: 'User session is already active. Please logout from there and login here.' });
+      // }
 
       const modules = await RoleModule.list();
       const userPermissions = await Permission.permissionByRole(user?.role_id);

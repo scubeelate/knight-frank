@@ -3,32 +3,21 @@ const crypto = require("crypto");
 function getClientId(req) {
   return crypto
     .createHash("sha256")
-    .update(
-      (req.headers["sourceip"] || req.ip) +
-        (req.headers["useragentsource"] || req.headers["user-agent"])
-    )
+    .update((req.ip + req.headers["user-agent"]))
     .digest("hex");
 }
 
 function getCsrfTokenId(req) {
   return crypto
     .createHash("sha256")
-    .update(
-      (req.headers["sourceip"] || req.ip) +
-        (req.headers["useragentsource"] || req.headers["user-agent"]) +
-        "CSRF_TOKEN"
-    )
+    .update((req.ip + req.headers["user-agent"]) +"CSRF_TOKEN")
     .digest("hex");
 }
 
 function getSessionId(req) {
   return crypto
     .createHash("sha256")
-    .update(
-      (req.headers["sourceip"] || req.ip) +
-        (req.headers["useragentsource"] || req.headers["user-agent"]) +
-        "SESSION_ID"
-    )
+    .update((req.ip + req.headers["user-agent"]) + "SESSION_ID")
     .digest("hex");
 }
 
