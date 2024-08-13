@@ -95,7 +95,7 @@ function renderProfileMissingHTML() {
                 <div class="custom-card">
                     <div class="flex-box">
                         <div class="logo">
-                            <img src='/images/logo.svg' alt="Logo">
+                            <img src='logo.svg' alt="Logo">
                         </div>
                         <h1 class="font-semibold text-2xl py-2">[ERROR_TITLE]</h1>
                         <p class="sub-title text-center py-4">[ERROR_MESSAGE]</p>
@@ -324,7 +324,7 @@ function generateSignedUrl(route, request, expiresIn) {
     .update(";")
     .update(getClientId(request))
     .digest("hex");
-  return `/profile/download/${request.params.id}?signature=${signature}&expires=${expiresIn}`;
+  return `/download/${request.params.id}?signature=${signature}&expires=${expiresIn}`;
 }
 
 function verifySignedUrl(pathname, signature, expiresIn, request) {
