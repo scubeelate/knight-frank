@@ -47,17 +47,17 @@ module.exports = (app) => {
       }
     })
   );
-  app.use(
-    "/profile",
-    createProxyMiddleware({
-      target: process.env.WEB_API_ENDPOINT,
-      changeOrigin: true,
-      timeout: 6000,
-      pathRewrite: {
-        "/profile": "", // Remove the '/admin' prefix
-      }
-    })
-  );
+  // app.use(
+  //   "/profile",
+  //   createProxyMiddleware({
+  //     target: process.env.WEB_API_ENDPOINT,
+  //     changeOrigin: true,
+  //     timeout: 6000,
+  //     pathRewrite: {
+  //       "/profile": "", // Remove the '/admin' prefix
+  //     }
+  //   })
+  // );
   app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 5000000 }));
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(express.static(path.join(__dirname, './build'),{ etag: false }))
