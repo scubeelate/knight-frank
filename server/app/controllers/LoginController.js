@@ -60,8 +60,7 @@ class LoginController {
         });
       }
        
-      // const isAuthenticated = await authenticate(username, password);
-      const isAuthenticated = true
+      const isAuthenticated = await authenticate(username, password);
 
     
       // If passwords do not match, return error

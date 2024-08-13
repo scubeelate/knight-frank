@@ -101,16 +101,8 @@ static async index(request, response) {
         });
       }
      
-      //  let user = await fetchUserByEmailWithRetry(request.body.email);
-      let user = {
-        userAccountControl: 500,
-        displayName:'Venkatesh',
-        employeeID: '123456',
-        mobile:'+91 9876543212',
-        department:'IT',
-        title:"SE",
-        company:'Scube',
-      }
+       let user = await fetchUserByEmailWithRetry(request.body.email);
+      
       if (user) {
         if (Number(user.userAccountControl) === 514)
           return response.status(400).send({
