@@ -1,6 +1,10 @@
 "use strict";
 const axios = require("axios");
 const crypto = require("crypto");
+const https = require("https");
+const agent = new https.Agent({
+  rejectUnauthorized: false,
+});
 
 function addDialCode(phoneNumber) {
   const regex = /^\+91/;
@@ -278,6 +282,7 @@ async function getUserCardData(id) {
       timestamp: Date.now(),
       "o-sign": createSignature(Date.now(), process.env.SHARED_SECRET_KEY),
     },
+    httpsAgent: agent
   };
   let validate = await axios.get(url, config).then(
     (resp) => {
@@ -299,6 +304,7 @@ async function cardActivityLogEvent(data) {
       timestamp: Date.now(),
       "o-sign": createSignature(Date.now(), process.env.SHARED_SECRET_KEY),
     },
+    httpsAgent: agent 
   };
   let validate = await axios.post(url, data, config).then(
     (resp) => {
