@@ -21,7 +21,7 @@ const config = {
   attributes: {
     user: ['displayName', 'employeeID', 'mail', 'mobile', 'title',
       'designation', 'department', 'company', 'telephoneNumber', 'streetAddress',
-      'city', 'state', 'postalCode', 'country', 'userAccountControl'],
+      'l', 'postalCode', 'co', 'userAccountControl'],
   },
   entryParser: customParser
 

@@ -119,7 +119,7 @@ static async index(request, response) {
           image:"",
           department: user.department,
           company: user.company,
-          work_location: `${user.streetAddress}, ${user.city}, ${user.state}, ${user.postalCode}, ${user.country}`,
+          work_location: `${user.streetAddress}, ${user.l}, ${user.state}, ${user.postalCode}, ${user.co}`,
           created_by:request.user.id,
         };
         await Employee.create(obj);
