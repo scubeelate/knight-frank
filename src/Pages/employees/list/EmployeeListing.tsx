@@ -3,9 +3,6 @@ import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import moment from "moment";
-import FileUploaderModal from "./FileUploaderModal";
-import RecordModal from "./AddNewRecordModal";
-import AddEmployeeModal from "./AddEmployeeModal";
 import { Link } from "react-router-dom";
 import {
   decryptAESKey,
@@ -190,14 +187,8 @@ const EmployeeListing = () => {
   const handleClose = (type: any) => {
     let temp: any = { ...open };
     temp[type] = false;
-    setOpen(temp);
-    setShowModal(true)
-  };
-
-  const handleOpen = (type: any) => {
-    let temp: any = { ...open };
-    temp[type] = true;
-    setOpen(temp);
+    setOpen(temp); 
+    setShowModal(false)
   };
 
   const handleAddRecord = () => {
@@ -447,30 +438,6 @@ const EmployeeListing = () => {
           />
         </div>
       </div>
-      <AddEmployeeModal
-        open={open?.addEmployee}
-        handleClose={() => {
-          handleClose("addEmployee");
-        }}
-        handleAddRecord={handleAddRecord}
-      />
-
-      <RecordModal
-        open={open?.addRecord}
-        handleClose={() => {
-          handleClose("addRecord");
-        }}
-        handleUploadFile={handleUploadFile}
-      />
-
-      <FileUploaderModal
-        open={open?.fileUploader}
-        handleClose={() => {
-          handleClose("fileUploader");
-        }}
-        refresh={() => fetchData(params)}
-      />
-
       <Dialog open={showModal} TransitionComponent={Transition} keepMounted onClose={handleClose} aria-describedby='alert-dialog-slide-description'>
         <DialogTitle>{'Add New Employee?'}</DialogTitle>
         <DialogContent>
@@ -518,8 +485,6 @@ const EmployeeListing = () => {
 
         </DialogActions>
       </Dialog>
-
-
     </div>
   );
 };

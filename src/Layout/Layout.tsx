@@ -34,12 +34,6 @@ const CorporateEmployeeListing = lazy(
 const CorporateViewEmployee = lazy(
   () => import("../Pages/employees/view/ViewEmployee")
 );
-const CorporateCreateEmployee = lazy(
-  () => import("../Pages/employees/CreateEmployee")
-);
-const CorporateEditEmployee = lazy(
-  () => import("../Pages/employees/EditEmployee")
-);
 
 const Reports = lazy(
   () => import("../Pages/reports")
@@ -136,23 +130,6 @@ export const Layout = () => (
             element={
               <PrivateRoute module="employees">
                 <CorporateViewEmployee />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/admin/employees/edit/:id"
-            element={
-              <PrivateRoute module="employees">
-                <CorporateEditEmployee />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/admin/employees/create"
-            element={
-              <PrivateRoute module="employees">
-                <CorporateCreateEmployee />
               </PrivateRoute>
             }
           />

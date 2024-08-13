@@ -1,10 +1,7 @@
 import { useState } from "react";
-import CustomButton from "../../../components/CustomButton";
-import { axiosInstance } from "../../../utils/axios";
-import { checkModulePrivilegeAccess, showToastMessage } from "../../../utils/helpers";
+
 
 const EmployeeInfo = ({ employee, refresh }: any) => {
-  const [loading, setLoading] = useState(false);
   let data = [
     {
       title: "Employee ID",
@@ -35,46 +32,15 @@ const EmployeeInfo = ({ employee, refresh }: any) => {
       value: `${employee?.card_status}` || "--",
     },
     {
-      title: "Blood Group",
-      value: `${employee?.blood_group}` || "--",
-    },
-    {
       title: "Work Address",
       value: `${employee?.work_location}` || "--",
     },
   ];
 
-  const RequestCard = (employeeId: any) => {
-    setLoading(true);
-    axiosInstance
-      .put(`/employees/card-print-request/${employeeId}`)
-      .then((response: any) => {
-        showToastMessage('CARD REQUESTED SUCCESSFULLY!.', "success");
-        refresh()
-      })
-      .catch((error) => {
-        showToastMessage(error.message, 'error')
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
   return (
     <div className="bg-white p-3 lg:p-6">
       <div className="flex justify-between items-center">
         <p className="text-lg font-bold">Employee Information</p>
-        {!employee?.is_print_requested && checkModulePrivilegeAccess("employees", "is_update") ? (
-          <CustomButton
-            loading={loading}
-            handleClick={() => {
-              RequestCard(employee.id);
-            }}
-            text="Request Card"
-            classes="bg-darkBlue px-20 py-2 text-white"
-          />
-        ) : (
-          ""
-        )}
       </div>
 
       <div className=" bg-lightshadedGray mt-4 p-4 min-h-[130px] max-h-full flex flex-col lg:grid lg:grid-cols-4 gap-10">
@@ -89,23 +55,6 @@ const EmployeeInfo = ({ employee, refresh }: any) => {
             </p>
           </div>
         ))}
-        <>
-        <div
-            className="flex justify-between lg:flex-col lg:justify-start gap-2"
-          >
-            <p className="text-xs text-bluishGray">Image</p>
-            <p className="text-sm text-shadeDarkBlue break-words">
-              {
-                employee.image_base64 ? 
-                <img
-                className="w-20 h-20 rounded"
-                src={employee.image_base64}
-                alt="profile"
-              />  : <>NA</>
-              }
-            </p>
-            </div>
-        </>
       </div>
     </div>
   );

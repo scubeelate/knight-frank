@@ -140,13 +140,13 @@ const ViewUser = () => {
       {isLoading ? (
         "Loading..."
       ) : (
-        <div className="w-full grid grid-cols-[350px_minmax(700px,_1fr)_0px]   ">
+        <div className="w-full grid grid-cols-[300px_minmax(700px,_1fr)_0px]   ">
           <div className=" bg-white rounded-lg p-3 ">
             <div className="mt-1">
               <p className=" font-semibold text-base pb-2">
                 User Basic Information
               </p>
-              <div className="bg-lightshadedGray rounded-lg p-4">
+              <div className="bg-lightshadedGray rounded-lg p-1">
                 <div className="bg-CalmWaters  flex flex-col gap-y-6 rounded-lg p-4 font-onestRegular ">
                   {React.Children.toArray(
                     basicInfo?.map((item) => (
@@ -163,7 +163,7 @@ const ViewUser = () => {
             </div>
           </div>
 
-          <div className=" ml-10 rounded-lg">
+          <div className=" ml-3 rounded-lg">
             <div className="w-full bg-white rounded-lg pt-4 pl-4  flex  items-center">
               <div className="w-[100px] flex justify-center items-center font-semibold text-lg  border-b-2 pb-2 border-black text-black">
                 Logs

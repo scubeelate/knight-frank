@@ -46,29 +46,6 @@ const getEmployeeRoutes = (router) => {
     EmployeeController.show
   );
 
-  // Route for bulk upload employees data.
-  router.post(
-    "/bulk-upload-employees",
-    [Authenticate],
-    (req, res, next) => userPrivilege(req, res, next, "employees", "is_write"),
-    EmployeeController.bulkDataUpload
-  );
-
-  // Route for updating an existing employee
-  router.put(
-    "/:id",
-    [Authenticate,EmployeeRequest.validateEmployee(),EmployeeRequest.validateOnStore()],
-    (req, res, next) => userPrivilege(req, res, next, "employees", "is_update"),
-    EmployeeController.update
-  );
-  // Route for updating an existing employee
-  router.put(
-    "/card-print-request/:id",
-    [Authenticate, EmployeeRequest.validateEmployee()],
-    (req, res, next) => userPrivilege(req, res, next, "employees", "is_update"),
-    EmployeeController.employeeCardPrintRequest
-  );
-
   // Route for fetching employee cards
   router.get(
     "/cards/:id",

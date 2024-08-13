@@ -28,7 +28,7 @@ const Login = () => {
       params,
       {
         email: "email|required",
-        password: "required|min:8|max:14",
+        password: "required",
       },
       {
         required: "*required",
@@ -179,15 +179,6 @@ const Login = () => {
               type="submit"
             />
           </div>
-          {/* <p>OR</p>
-          <div className="flex justify-center">
-            <CustomButton
-              loading={isLoading}
-              handleClick={handleSSOLogin}
-              text="SSO Login"
-              classes="bg-darkshadeBlue rounded-lg text-white w-7/12 px-20  py-3"
-            />
-          </div> */}
           </form>
         </div>
       </div>

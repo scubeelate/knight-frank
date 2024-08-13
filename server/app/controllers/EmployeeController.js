@@ -13,6 +13,7 @@ const crypto = require("crypto");
 const NodeCache = require("memory-cache");
 const {encryptKey,encryptClientData,decryptClientData } = require("../helpers/encryption")
 const { getClientId } = require("../helpers/utils");
+const { fetchUserByEmailWithRetry } = require("../helpers/ActiveDirectoryService");
 
 class EmployeeController {
   /**
@@ -71,6 +72,20 @@ static async index(request, response) {
    */
   static async create(request, response) {
     try {
+      const rules = {
+        email: "required|max:225|email",
+      };
+
+      let validation = new Validator(request.body, rules);
+
+      if (validation.fails()) {
+        const error = validation.errors.errors;
+        return response.status(400).send({
+          status: false,
+          message: error[Object.keys(error)[0]].join(),
+        });
+      }
+
       if (await Employee.findOne({ email: request.body.email })) {
         Logger.error({
           error_type: ERROR_TYPES.VALIDATION_ERROR,
@@ -85,39 +100,71 @@ static async index(request, response) {
           message: "Employee already exists with the given email address",
         });
       }
-      if (await Employee.findOne({ emp_id: request.body.emp_id })) {
-        return response.status(400).send({
+     
+      //  let user = await fetchUserByEmailWithRetry(request.body.email);
+      let user = {
+        userAccountControl: 500,
+        displayName:'Venkatesh',
+        employeeID: '123456',
+        mobile:'+91 9876543212',
+        department:'IT',
+        title:"SE",
+        company:'Scube',
+      }
+      if (user) {
+        if (Number(user.userAccountControl) === 514)
+          return response.status(400).send({
+            status: false,
+            message: "Employee email is disabled",
+          });
+
+        let obj = {
+          email: String(user.mail).toLowerCase(),
+          name: user.displayName,
+          emp_id: user.employeeID,
+          phone: user.mobile,
+          designation: user.title,
+          image:"",
+          department: user.department,
+          company: user.company,
+          work_location: `${user.streetAddress}, ${user.city}, ${user.state}, ${user.postalCode}, ${user.country}`,
+          created_by:request.user.id,
+        };
+        await Employee.create(obj);
+        const employee = await Employee.findOne({ email: request.body.email })
+        const cardMeta = {
+          employee_id: employee.id,
+          card_uuid: uuidv4(),
+          name: employee.name,
+          emp_id: employee.emp_id,
+          designation: employee.designation,
+          department: employee.department,
+          card_status: "REQUESTED",
+          created_by: request.user.id
+        }
+       
+        await EmployeeCard.create(cardMeta);
+        await Employee.updatedCardStatus(employee.id, {
+          is_print_requested: 1,
+          card_status: "REQUESTED",
+        });
+        Log.create({
+          model: 'EMPLOYEE',
+          user_id: auth_user.id,
+          message: `Add New employee ${request.body.email} to the System`,
+          type: 'ACTION'
+        })
+        return response.status(200).send({
+          status: true,
+          message: "Employee Added Successfully",
+        });
+      } else {
+        return response.status(500).send({
           status: false,
-          message: "Employee already exists with the given employee ID",
+          message: "Unable to fetch data from active directory",
         });
       }
-      
-      let data = _.pick(request.body, [
-        "emp_id",
-        "name",
-        "email",
-        "phone",
-        "department",
-        "designation",
-        "work_location",
-        "image_base64",
-        "blood_group",
-      ]);
-      data['created_by'] = request.user.id
-      await Employee.create(data);
 
-      // Log employee creation
-      await Log.create({
-        user_id: request.user.id,
-        module: "EMPLOYEE",
-        message: `Created employee with ID ${data.emp_id}`,
-        action_type: "ACTION",
-      });
-
-      return response.status(201).send({
-        status: true,
-        message: "Employee created successfully",
-      });
     } catch (exception) {
       handleErrorDbLogger("Employee creation failed", exception, request);
       return response.status(500).send({
@@ -148,7 +195,7 @@ static async show(request, response) {
     const encryptKeyData = await encryptKey(clientPublicKey, key);
     const encryptionPromises = [
       'name', 'designation', 'department', 'phone',
-      'email', 'emp_id','blood_group'
+      'email', 'emp_id'
     ].map(async (property) => {
       if (employee[property]) {
         employee[property] = await encryptClientData(key, employee[property]);
@@ -171,105 +218,6 @@ static async show(request, response) {
     });
   }
 }
-
-
-  /**
-   * Update employee details
-   *
-   * @param {Object} request
-   * @param {Object} response
-   */
-  static async update(request, response) {
-    try {
-      let data = _.pick(request.body, [
-        "emp_id",
-        "name",
-        "phone",
-        "department",
-        "designation",
-        "work_location",
-        "image_base64",
-        "email"
-      ]);
-      data['updated_by'] = request.user.id
-
-      const updated = _.merge(request.employee, data);
-      let result = await Employee.updatedRecord(request.params.id, updated);
-
-      // Log employee details update
-      await Log.create({
-        user_id: request.user.id,
-        module: "EMPLOYEE",
-        message: `Updated the details of employee ID ${data.emp_id}`,
-        action_type: "ACTION",
-      });
-
-      return response.send({
-        status: true,
-        message: "Employee updated successfully",
-        data: result,
-      });
-    } catch (exception) {
-      handleErrorDbLogger("Employee updation failed", exception, request);
-      return response.status(500).send({
-        status: false,
-        message: "Internal Server Error",
-      });
-    }
-  }
-
-  /**
-   * Request for employee card print
-   *
-   * @param {Object} request
-   * @param {Object} response
-   */
-  static async employeeCardPrintRequest(request, response) {
-    try {
-      let employee = request.employee;
-      let obj = {
-        employee_id: employee.id,
-        card_uuid: uuidv4(),
-        name: employee.name,
-        emp_id: employee.emp_id,
-        designation: employee.designation,
-        department: employee.department,
-        blood_group: employee.blood_group,
-        image_base64: employee.image_base64,
-        card_status: "REQUESTED",
-        created_by: request.user.id
-      };
-      let cardExists = await EmployeeCard.findOne({ employee_id: employee.id });
-      if (cardExists) {
-        obj["is_reprint"] = 1;
-      }
-      await EmployeeCard.create(obj);
-      await Employee.updatedCardStatus(employee.id, {
-        is_print_requested: 1,
-        card_status: "REQUESTED",
-      });
-
-      // Log card print request
-      await Log.create({
-        user_id: request.user.id,
-        module: "EMPLOYEE",
-        message: `Requested card print for employee with ID ${employee.emp_id}`,
-        action_type: "ACTION",
-      });
-
-      return response.status(200).send({
-        status: true,
-        message: "Card request submitted successfully",
-      });
-    } catch (exception) {
-      console.error(exception)
-      handleErrorDbLogger("Employee card print request failed", exception, request)
-      return response.status(500).send({
-        status: false,
-        message: "Internal Server Error",
-      });
-    }
-  }
 
   /**
    * Get employee cards
@@ -369,114 +317,6 @@ static async show(request, response) {
     }
   }
 
-  /**
-   * Update bulk employee data
-   *
-   * @param {Object} request
-   * @param {Object} response
-   */
-  static async bulkDataUpload(request, response) {
-    try {
-      // Validation of request body
-      const body = request.body;
-
-      const rules = {
-        emp_id: "required|max:100",
-        name: "required|max:150",
-        email: "email|max:225",
-        phone: "max:13",
-        department: "string|max:100",
-        designation: "string|max:100",
-        work_location: "string|max:3000",
-      };
-
-      // Process each employee in the request
-      let response_list = [];
-      for (let employee of body.employees) {
-        const serverPrivateKey = NodeCache.get("privateKey");
-        const encryptionPromises = [
-          "name",
-          "designation",
-          "department",
-          "phone",
-          "email",
-          "emp_id",
-          "blood_group",
-        ].map(async (property) => {
-          if (employee[property]) {
-            employee[property] = await decryptClientData(
-              serverPrivateKey,
-              request.headers["encrypted-key"],
-              employee[property]
-            );
-          }
-        });
-        await Promise.all(encryptionPromises);
-        let validation = new Validator(employee, rules);
-        if (validation.fails()) {
-          const error = validation.errors.errors;
-          response_list.push({
-            emp_id: employee.emp_id,
-            email: employee.email,
-            status: "REJECTED",
-            remark: error[Object.keys(error)[0]].join(),
-          });
-        } else {
-          let employeeExist = await Employee.isExists(employee);
-          if (!employeeExist) {
-            let data = _.pick(employee, [
-              "emp_id",
-              "name",
-              "email",
-              "phone",
-              "department",
-              "designation",
-              "work_location",
-              "blood_group",
-            ]);
-            data['created_by']= request.user.id
-
-            // Create employee
-            await Employee.create(data);
-            console.log(data);
-            response_list.push({
-              emp_id: employee.emp_id,
-              email: employee.email,
-              status: "SUCCESS",
-              remark: "NA",
-            });
-          } else {
-            response_list.push({
-              emp_id: employee.emp_id,
-              email: employee.email,
-              status: "ERROR",
-              remark: "Employee already exists with this email/Id",
-            });
-          }
-        }
-      }
-
-      // Log bulk data upload
-      await Log.create({
-        user_id: request.user.id,
-        module: "EMPLOYEE",
-        message: `Initiated the Bulk upload of ${body.employees.length} Employees`,
-        action_type: "ACTION",
-      });
-
-      return response.send({
-        status: true,
-        data: "success",
-        response_list: response_list,
-      });
-    } catch (exception) {
-      handleErrorDbLogger("Employee bulk image upload failed", exception, request)
-      return response.status(500).send({
-        status: false,
-        message: "Internal Server Error",
-      });
-    }
-  }
 }
 
 module.exports = EmployeeController;

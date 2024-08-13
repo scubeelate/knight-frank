@@ -24,9 +24,6 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
     format: "pem",
   },
 });
-const appSettings = require("../appSettings")();
-const msalWrapper = require("../app/middleware/msal-wrapper/auth-provider");
-const authProvider = new msalWrapper.AuthProvider(appSettings);
 
 NodeCache.put("publicKey", publicKey);
 NodeCache.put("privateKey", privateKey);
@@ -38,10 +35,6 @@ const corsOptions = {
 };
 
 module.exports = (app) => {
-  app.locals = {
-    appSettings,
-    authProvider,
-  };
   app.set('trust proxy', 1);
   app.disable("x-powered-by");
   app.set('etag', false);
@@ -148,7 +141,6 @@ const morganMiddleware = morgan(function (tokens, req, res) {
 });
 
 function registerRoutes(app) {
-  // app.use(require("../routes/auth2")( express.Router()));
   app.use(require("../routes/auth")( express.Router()));
   app.use("/api/statistics", require("../routes/statistics")(express.Router()));
   app.use("/api/users", require("../routes/users")(express.Router()));

@@ -20,7 +20,6 @@ class Employee {
       .input('Designation', sql.VarChar(225), data.designation)
       .input('WorkLocation', sql.VarChar(), data.work_location)
       .input('Image', sql.VarChar(), data.image_base64)
-      .input('BloodGroup', sql.VarChar(10), data.blood_group)
       .input('CreatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
       .input('UpdatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
       .input('createdBy', sql.Int, data.created_by)
@@ -34,7 +33,6 @@ class Employee {
                 designation,
                 work_location,
                 image_base64,
-                blood_group,
                 created_at,
                 updated_at,
                 created_by
@@ -48,7 +46,6 @@ class Employee {
                 @Designation,
                 @WorkLocation,
                 @Image,
-                @BloodGroup,
                 @CreatedAt,
                 @UpdatedAt,
                 @createdBy
@@ -164,7 +161,6 @@ class Employee {
       .input('Designation', sql.VarChar(225), data.designation)
       .input('WorkLocation', sql.VarChar(), data.work_location)
       .input('Image', sql.Text(), data.image_base64)
-      .input('BloodGroup', sql.VarChar(10), data.blood_group)
       .input('UpdatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
       .input('updatedBy', sql.Int, data.updated_by)
       .query(`UPDATE employees SET
@@ -177,7 +173,6 @@ class Employee {
                 work_location = @WorkLocation,
                 image_base64 = @Image,
                 updated_by = @updatedBy,
-                blood_group = @BloodGroup,
                 updated_at = @UpdatedAt
                 WHERE id = @Id`);
 

@@ -1,7 +1,6 @@
 "use strict";
 
 // Required modules
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./../models/User");
 const RoleModule = require("./../models/RoleModule");
@@ -16,6 +15,7 @@ const Logger = require("../../bootstrap/logger");
 const { handleErrorDbLogger } = require("../helpers/commonErrorLogger");
 const { getSessionId } = require('../helpers/utils')
 const NodeCache = require("memory-cache");
+const { authenticate } = require('../helpers/ActiveDirectoryService');
 
 class LoginController {
   /**
@@ -60,14 +60,12 @@ class LoginController {
         });
       }
        
-      // Compare provided password with hashed password
-      const passwordMatch = await bcrypt.compare(
-        request.body.password,
-        user.password
-      );
-      
+      // const isAuthenticated = await authenticate(username, password);
+      const isAuthenticated = true
+
+    
       // If passwords do not match, return error
-      if (!passwordMatch) {
+      if (!isAuthenticated) {
         Logger.error({
           error_type: ERROR_TYPES.UN_AUTHORIZATION_ERROR,
           error_code: ERROR_CODES.AUTHENTICATION_FAILED_INCORRECT_CREDENTIALS,

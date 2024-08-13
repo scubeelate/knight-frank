@@ -10,6 +10,7 @@ const {
   ERROR_MESSAGES,
 } = require("../helpers/error-codes");
 const NodeCache = require("memory-cache");
+const { decryptClientData } = require("../helpers/encryption");
 
 const decryptPayload = async (payload, headers, properties) => {
   const serverPrivateKey = NodeCache.get("privateKey");

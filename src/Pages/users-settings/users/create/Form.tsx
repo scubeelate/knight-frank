@@ -32,7 +32,6 @@ const Form = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState(fields);
   const [roles, setRoles] = useState([]);
-  const [isHidden, setIsHidden] = useState(true);
 
   const navigate = useNavigate();
 
@@ -66,7 +65,7 @@ const Form = () => {
     let rules:any = {
       name: "required|max:150",
       email: "required|max:150|email",
-      phone: "required|max:13",
+      phone: "max:13",
       role_id: "required|integer",
       is_active: "required",
     };

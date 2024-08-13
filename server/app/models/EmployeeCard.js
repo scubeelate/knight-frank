@@ -18,8 +18,6 @@ class EmployeeCard {
       .input('EmpId', sql.VarChar(50), data.emp_id)
       .input('Department', sql.VarChar(225), data.department)
       .input('Designation', sql.VarChar(225), data.designation)
-      .input('Image', sql.VarChar(sql.MAX), data.image_base64)
-      .input('BloodGroup', sql.VarChar(10), data.blood_group)
       .input('CardStatus', sql.VarChar, 'REQUESTED')
       .input('CreatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
       .input('UpdatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
@@ -31,8 +29,6 @@ class EmployeeCard {
           emp_id,
           department,
           designation,
-          image_base64,
-          blood_group,
           card_status,
         created_at,
         updated_at,
@@ -45,8 +41,6 @@ class EmployeeCard {
         @EmpId,
         @Department,
         @Designation,
-        @Image,
-        @BloodGroup,
         @CardStatus,
         @CreatedAt,
         @UpdatedAt,
@@ -169,8 +163,12 @@ class EmployeeCard {
       .input('PrintStatus', sql.VarChar(50), data.card_print_status)
       .input('DispatchedDate', sql.DateTime2, data.card_print_status === "DISPATCHED" ? moment().format('YYYY-MM-DD HH:mm:ss') : null)
       .input('updatedBy', sql.Int, data.updated_by)
+      .input('IsActive', sql.Bit, data.is_active)
+      .input('CardStatus', sql.VarChar(50), data.card_status)
       .input('UpdatedAt', sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
       .query(`UPDATE employee_cards SET
+      card_status = @CardStatus,
+      is_active = @IsActive,
       card_print_status = @PrintStatus,
       dispatched_date = @DispatchedDate,
                 updated_by = @updatedBy,

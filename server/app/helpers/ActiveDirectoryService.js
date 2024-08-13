@@ -7,7 +7,6 @@ const customParser = (entry, raw, callback) => {
   callback(entry)
 }
 const config = {
-  // url: process.env.LDAPS_URL,
   url: process.env.LDAPS_CONNECTION_URL,
   secure: true,
   username: process.env.LDAPS_USER_NAME,
@@ -16,13 +15,13 @@ const config = {
   tlsOptions: {
     rejectUnauthorized: false
   },
-  referrals: {  
+  referrals: {
     enabled: true,
- },
+  },
   attributes: {
-    user: ['displayName', 'employeeID', 'mail', 'mobile', 'title', 
-    'designation', 'department','company','telephoneNumber','streetAddress',
-   'city','state','postalCode','country','userAccountControl'],
+    user: ['displayName', 'employeeID', 'mail', 'mobile', 'title',
+      'designation', 'department', 'company', 'telephoneNumber', 'streetAddress',
+      'city', 'state', 'postalCode', 'country', 'userAccountControl'],
   },
   entryParser: customParser
 
@@ -39,7 +38,7 @@ exports.fetchUserByEmail = async (email) => {
     return
   } catch (e) {
     console.log(e)
-    throw(e)
+    throw (e)
   }
 
 };
@@ -69,21 +68,22 @@ exports.fetchUserByEmailWithRetry = async (email, maxRetries = 2) => {
   // If no data is found after all retries, return null
   return null;
 };
-async function syncUsers() {
-  const filter = "(&(objectCategory=person)(objectClass=user)(title=Partner*)(telephoneNumber=+91*))";
-  try {
-  const user = await ad.findUsers(filter)
-  let count = 0;
-  if (user?.length) {
-    for(let u of user) {
-      if(Number(u.userAccountControl)=== 514){
-        count+=1
+
+exports.authenticate = (username, password) => {
+  return new Promise((resolve, reject) => {
+    ad.authenticate(username, password, (err, auth) => {
+      if (err) {
+        console.log('ERROR: ' + JSON.stringify(err));
+        return reject(err);
       }
-    }
-  }
-  return
-  } catch (e) {
-    console.log(e,'errror')
-    throw(e)
-  }
+
+      if (auth) {
+        console.log('Authenticated!');
+        return resolve(true);
+      } else {
+        console.log('Authentication failed!');
+        return resolve(false);
+      }
+    });
+  });
 }

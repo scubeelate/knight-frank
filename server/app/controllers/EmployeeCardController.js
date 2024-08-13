@@ -19,6 +19,8 @@ const { handleErrorDbLogger } = require("../helpers/commonErrorLogger");
 const crypto = require("crypto");
 const NodeCache = require("memory-cache");
 const { getClientId } = require("../helpers/utils");
+const {encryptKey,encryptClientData } = require("../helpers/encryption")
+const Employee = require('../models/Employee');
 
 class EmployeeCardController {
   /**
@@ -29,14 +31,30 @@ class EmployeeCardController {
    */
   static async index(request, response) {
     try {
+      const clientId = getClientId(request);
+      const clientPublicKey = NodeCache.get(clientId);
+      if(!clientPublicKey) {
+        return response.status(401).send({
+          status: false,
+          message: "Unauthorized access. Session not found.",
+        });
+      }
       const metaData = await EmployeeCard.list(request);
-     await Promise.all(encryptionPromises);
+      const key = crypto.randomBytes(32).toString("hex");
+      const encryptKeyData = await encryptKey(clientPublicKey, key);
+
+      const encryptionPromises = metaData.data.map(async (ele) => {
+        ele["name"] = await encryptClientData(key, ele.name);
+        ele["emp_id"] = await encryptClientData(key, ele.emp_id);
+      });
+
+      await Promise.all(encryptionPromises);
 
       return response.status(200).send({
         status: true,
         message: "Card Requests Lists",
         data: metaData,
-        x_key: '',
+        x_key: encryptKeyData,
       });
     } catch (exception) {
       handleErrorDbLogger("Card Requests fetching failed", exception, request);
@@ -47,33 +65,54 @@ class EmployeeCardController {
     }
   }
 
-  /**
+/**
    * View the Card Request
    *
    * @param {object} request
    * @param {object} response
    */
-  static async show(request, response) {
-    try {
-    
-    return response.status(200).send({
-      status: true,
-      message: "Card Request Data",
-      data: request.card_request,
-      x_key: ''
+static async show(request, response) {
+  try {
+  const card_request = request.card_request;
+  const clientId = getClientId(request);
+  const clientPublicKey = NodeCache.get(clientId);
+  if(!clientPublicKey) {
+    return response.status(401).send({
+      status: false,
+      message: "Unauthorized access. Session not found.",
     });
-    } catch (exception) {
-      handleErrorDbLogger(
-        "Card Request details fetching failed",
-        exception,
-        request
-      );
-      return response.status(500).send({
-        status: false,
-        message: "Internal Server Error",
-      });
-    }
   }
+  const key = crypto.randomBytes(32).toString("hex");
+  const encryptKeyData = await encryptKey(clientPublicKey, key);
+  const encryptionPromises = [
+    'name',
+    'emp_id'
+  ].map(async (property) => {
+    if (card_request[property]) {
+      card_request[property] = await encryptClientData(key, card_request[property]);
+    }
+  });
+  
+  await Promise.all(encryptionPromises);
+  
+  return response.status(200).send({
+    status: true,
+    message: "Card Request Data",
+    data: request.card_request,
+    x_key: encryptKeyData
+  });
+  } catch (exception) {
+    handleErrorDbLogger(
+      "Card Request details fetching failed",
+      exception,
+      request
+    );
+    return response.status(500).send({
+      status: false,
+      message: "Internal Server Error",
+    });
+  }
+}
 
   /**
    * Update Card Request Status
@@ -118,10 +157,19 @@ class EmployeeCardController {
 
       let obj = {
         card_print_status: request.body.status,
-        updated_by: request.user.id
+        updated_by: request.user.id,
+        is_active: request.body.status === 'DISPATCHED' ? true : false,
+        card_status:"ACTIVE"
       };
 
       let result = await EmployeeCard.updatedRecord(request.params.id, obj);
+
+      if(request.body.status === 'DISPATCHED'){
+        await Employee.updatedEmployeeCardStatus(card.employee_id, {
+          card_status: "ACTIVE",
+          is_active: 1,
+        });
+      }
 
       await Log.create({
         user_id: request.user.id,

@@ -37,8 +37,6 @@ const ViewEmployee = () => {
         response['phone'] = response.phone ? await decryptServerData(response.phone,key) : '--'
         response['email'] = response.email ? await decryptServerData(response.email,key) : '--'
         response['emp_id'] = await decryptServerData(response.emp_id,key)
-        if(response.blood_group)   response['blood_group'] = await decryptServerData(response.blood_group,key)
-
         setEmployee(response);
       })
       .catch((error) => {

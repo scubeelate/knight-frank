@@ -7,7 +7,6 @@ const  DailyRotateFile  = require("winston-daily-rotate-file");
 const MASKED_KEYS = [
   "authorization",
   "password",
-  "blood_group",
   "phone",
   "image_base64",
 ];

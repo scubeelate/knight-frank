@@ -18,7 +18,6 @@ class User {
         .input('Email', sql.VarChar(225), data.email)
         .input('Phone', sql.VarChar(225), data.phone)
         .input('RoleId',sql.Int, data.role_id)
-        .input('Password',sql.Int, data.password)
         .input('IsActive',sql.Int, 1)
         .input('CreatedAt',sql.DateTime2, moment().format('YYYY-MM-DD HH:mm:ss'))
         .input('UpdatedAt',sql.DateTime2,moment().format('YYYY-MM-DD HH:mm:ss'))
@@ -28,7 +27,6 @@ class User {
         email,
         phone,
         role_id,
-        password,
         is_active,
         created_at,
         updated_at,
@@ -39,7 +37,6 @@ class User {
         @Email,
         @Phone,
         @RoleId,
-        @Password,
         @IsActive,
         @CreatedAt,
         @UpdatedAt,

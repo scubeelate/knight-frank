@@ -33,7 +33,12 @@ const UserListing = () => {
     { headerName: "User ID", field: "id", width: 100 },
     { headerName: "Name", field: "name" },
     { headerName: "Email ID", field: "email" },
-    { headerName: "Contact Number", field: "phone", width: 150 },
+    { headerName: "Contact Number", field: "phone", width: 150,
+      cellRenderer: (params: any) => {
+        if (!params.data) return null;
+        return params.data.phone || "--";
+      },
+     },
     {
       headerName: "Role",
       field: "role_id",

@@ -68,9 +68,9 @@ DELETE FROM users;
 
 SET IDENTITY_INSERT users ON;
 
-INSERT INTO users (id, name, email, role_id, is_active, phone, created_at, updated_at,password)
+INSERT INTO users (id, name, email, role_id, is_active, phone, created_at, updated_at)
 VALUES
-(1, 'Abhijit Chinkate', 'abhijit.chinkate@in.knightfrank.com', 1, 1, '+918976525321', GETDATE(), GETDATE(),'$2b$10$OlEN519BmgM/HlGjyvv/.OlO/XbIW0rtrWYrQIt7tRWlctTAqAe2O');
+(1, 'Abhijit Chinkate', 'abhijit.chinkate@in.knightfrank.com', 1, 1, '+918976525321', GETDATE(), GETDATE());
 
 SET IDENTITY_INSERT users OFF;
 

@@ -1,7 +1,6 @@
 "use strict";
 
 const _ = require("lodash");
-const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const Log = require("../models/Log");
 const {

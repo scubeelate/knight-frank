@@ -16,7 +16,7 @@ module.exports = async (request, response, next) => {
 
     let validation = new Validator(request.body, {
         'email': 'required|email|max:255',
-        'password': 'required|min:8|max:14',
+        'password': 'required',
     });
 
     if (validation.fails()) {

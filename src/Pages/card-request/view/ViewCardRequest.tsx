@@ -30,11 +30,7 @@ const ViewCardRequest = () => {
         let data = response?.data?.data;
         const  key = await decryptAESKey(response?.data.x_key,clientPrivateKey)
         data['name'] = await decryptServerData(data.name,key)
-        data['designation'] = data.designation ? await decryptServerData(data.designation,key) : '--'
-        data['department'] = data.department ? await decryptServerData(data.department,key) : '--'
         data['emp_id'] = await decryptServerData(data.emp_id,key)
-        if(data.blood_group)   data['blood_group'] = await decryptServerData(data.blood_group,key)
-
         if (data.card_uuid) {
           data['nfc_id'] = `${process.env.APP_URL}/${data.card_uuid}`
       }
@@ -142,14 +138,6 @@ const ViewCardRequest = () => {
       title: "Department",
       value: dataById?.department ?? "-",
     },
-    {
-      title: "Blood Group",
-      value: dataById?.blood_group || "--",
-    },
-    {
-      title: "image",
-      value: dataById?.image_base64 ?? "",
-    },
   ];
   return (
     <div>
@@ -173,7 +161,7 @@ const ViewCardRequest = () => {
               <p className="text-lg font-bold">Card Details</p>
             </div>
 
-            <div className=" bg-lightshadedGray mt-2 rounded-lg p-4 min-h-[130px] max-h-full flex flex-col lg:grid lg:grid-cols-4 gap-10">
+            <div className=" bg-lightshadedGray mt-2 rounded-lg p-4 min-h-[100px] max-h-full flex flex-col lg:grid lg:grid-cols-4 gap-10">
               {data?.map((item, index) => (
                 <div
                   key={index}

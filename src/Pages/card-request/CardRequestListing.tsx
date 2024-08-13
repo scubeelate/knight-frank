@@ -144,8 +144,6 @@ const CardRequestListing = () => {
             let list = resp.data
             for(let item of list) {
               item['name'] = await decryptServerData(item.name,key)
-              item['designation'] = await decryptServerData(item.designation,key)
-              item['department'] = await decryptServerData(item.department,key)
               item['emp_id'] = await decryptServerData(item.emp_id,key)
             }
             param.successCallback(resp.data, resp.pagination?.total);
