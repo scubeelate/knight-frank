@@ -749,7 +749,7 @@ function renderHTML(response, vCardFormattedText,nonce) {
 
 
         <div style="background: radial-gradient(312.58% 330.45% at -26.02% -180.66%, #D0113A 0%, #2F040D 100%)"
-            class="w-full h-48 w-full rounded-2xl relative mt-24">
+            class="w-full h-48  rounded-2xl relative mt-24">
 
             <div class="flex flex-col text-center items-center justify-center gap-2 abolute top-0 left-0">
 
