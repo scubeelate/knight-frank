@@ -10,9 +10,7 @@ const { ERROR_CODES, ERROR_TYPES, ERROR_MESSAGES } = require("../helpers/error-c
 const Logger = require("../../bootstrap/logger");
 const { handleErrorDbLogger } = require("../helpers/commonErrorLogger");
 const crypto = require("crypto");
-const NodeCache = require("memory-cache");
-const {encryptKey,encryptClientData,decryptClientData } = require("../helpers/encryption")
-const { getClientId } = require("../helpers/utils");
+const {encryptKey,encryptClientData } = require("../helpers/encryption")
 const { fetchUserByEmailWithRetry } = require("../helpers/ActiveDirectoryService");
 
 class EmployeeController {
@@ -24,8 +22,7 @@ class EmployeeController {
  */
 static async index(request, response) {
   try {
-    const clientId = getClientId(request);
-    const clientPublicKey = NodeCache.get(clientId);
+    const clientPublicKey = request.session.publicKey;
     if(!clientPublicKey) {
       return response.status(401).send({
         status: false,
@@ -109,14 +106,17 @@ static async index(request, response) {
             status: false,
             message: "Employee email is disabled",
           });
-
+        let image = '';
+        if(user.thumbnailPhoto) {
+          image = `data:image/png;base64,${new Buffer(user.thumbnailPhoto).toString('base64')}`
+        }
         let obj = {
           email: String(user.mail).toLowerCase(),
           name: user.displayName,
           emp_id: user.employeeID,
           phone: user.mobile,
           designation: user.title,
-          image:"",
+          image_base64:image,
           department: user.department,
           company: user.company,
           work_location: `${user.streetAddress}, ${user.l}, ${user.state}, ${user.postalCode}, ${user.co}`,
@@ -142,7 +142,7 @@ static async index(request, response) {
         });
         Log.create({
           model: 'EMPLOYEE',
-          user_id: auth_user.id,
+          user_id: request.user.id,
           message: `Add New employee ${request.body.email} to the System`,
           type: 'ACTION'
         })
@@ -175,8 +175,7 @@ static async index(request, response) {
 static async show(request, response) {
   try {
     const employee = request.employee;
-    const clientId = getClientId(request);
-    const clientPublicKey = NodeCache.get(clientId);
+    const clientPublicKey = request.session.publicKey;
     if(!clientPublicKey) {
       return response.status(401).send({
         status: false,

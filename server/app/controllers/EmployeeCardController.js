@@ -17,8 +17,6 @@ const {
 const Logger = require("../../bootstrap/logger");
 const { handleErrorDbLogger } = require("../helpers/commonErrorLogger");
 const crypto = require("crypto");
-const NodeCache = require("memory-cache");
-const { getClientId } = require("../helpers/utils");
 const {encryptKey,encryptClientData } = require("../helpers/encryption")
 const Employee = require('../models/Employee');
 
@@ -31,8 +29,7 @@ class EmployeeCardController {
    */
   static async index(request, response) {
     try {
-      const clientId = getClientId(request);
-      const clientPublicKey = NodeCache.get(clientId);
+      const clientPublicKey = request.session.publicKey;
       if(!clientPublicKey) {
         return response.status(401).send({
           status: false,
@@ -74,8 +71,7 @@ class EmployeeCardController {
 static async show(request, response) {
   try {
   const card_request = request.card_request;
-  const clientId = getClientId(request);
-  const clientPublicKey = NodeCache.get(clientId);
+  const clientPublicKey = request.session.publicKey;
   if(!clientPublicKey) {
     return response.status(401).send({
       status: false,

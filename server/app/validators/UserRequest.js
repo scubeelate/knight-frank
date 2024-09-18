@@ -9,11 +9,10 @@ const {
   ERROR_TYPES,
   ERROR_MESSAGES,
 } = require("../helpers/error-codes");
-const NodeCache = require("memory-cache");
 const { decryptClientData } = require("../helpers/encryption");
 
-const decryptPayload = async (payload, headers, properties) => {
-  const serverPrivateKey = NodeCache.get("privateKey");
+const decryptPayload = async (payload, headers, properties,request) => {
+  const serverPrivateKey = request.app.locals.privateKey;
   await Promise.all(
     properties.map(async (property) => {
       if (payload[property]) {
@@ -67,7 +66,7 @@ const validate = () => {
     await decryptPayload(payload, request.headers, [
       "name",
       "phone"
-    ]);
+    ],request);
 
     let rules = {
       name: "required|max:150",

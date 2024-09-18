@@ -1,12 +1,11 @@
 const Validator = require('validatorjs');
 const Logger = require("../../bootstrap/logger");
 const { ERROR_CODES, ERROR_TYPES, ERROR_MESSAGES} = require("../helpers/error-codes");
-const NodeCache = require("memory-cache");
 const { decryptClientData } = require("../helpers/encryption");
 
 module.exports = async (request, response, next) => {
 
-    const serverPrivateKey = NodeCache.get("privateKey");
+    const serverPrivateKey = request.app.locals.privateKey;
     if(request.body['password']){
         request.body['password'] = await decryptClientData(serverPrivateKey,request.headers["encrypted-key"],request.body.password)
     }

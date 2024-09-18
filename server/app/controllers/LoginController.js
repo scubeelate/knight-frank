@@ -13,8 +13,6 @@ const {
 } = require("../helpers/error-codes");
 const Logger = require("../../bootstrap/logger");
 const { handleErrorDbLogger } = require("../helpers/commonErrorLogger");
-const { getSessionId } = require('../helpers/utils')
-const NodeCache = require("memory-cache");
 const { authenticate } = require('../helpers/ActiveDirectoryService');
 
 class LoginController {
@@ -60,7 +58,7 @@ class LoginController {
         });
       }
        
-      const isAuthenticated = await authenticate(request.body.email , request.body.password);
+       const isAuthenticated = await authenticate(request.body.email , request.body.password);
 
     
       // If passwords do not match, return error
@@ -77,10 +75,6 @@ class LoginController {
           message: "Authentication failed. Incorrect username/password.",
         });
       }
-
-      // if (NodeCache.get('LOGGED_IN'+user.id)) {
-      //   return response.status(400).json({ message: 'User session is already active. Please logout from there and login here.' });
-      // }
 
       const modules = await RoleModule.list();
       const userPermissions = await Permission.permissionByRole(user?.role_id);
@@ -100,16 +94,13 @@ class LoginController {
           id: permission.module_id,
         };
       });
-      NodeCache.put('LOGGED_IN'+user.id, true,2 * 60 * 60 * 1000);
-      const sessionId = getSessionId(request);
       const userInfo = {
         name: user.name,
         email: user.username,
         permissions: formattedPermissions,
         id: user.id,
        };
-       NodeCache.put(sessionId,JSON.stringify(userInfo), 2 * 60 * 60 * 1000);
-
+       request.session.userInfo = JSON.stringify(userInfo)
       // Generate JWT token
       const token = jwt.sign(
         {
@@ -165,14 +156,7 @@ class LoginController {
         message: "Logged out from the application.",
         action_type: "ACTION",
       });
-      const sessionId = getSessionId(request);
-
-      if(NodeCache.get(sessionId)){
-        NodeCache.del(sessionId)
-      }
-      if(NodeCache.get('LOGGED_IN'+request.user.id)){
-        NodeCache.del('LOGGED_IN'+request.user.id)
-      }
+      request.session.userInfo = ''
       return response.status(200).send({
         message: "Logged out successfully",
       });

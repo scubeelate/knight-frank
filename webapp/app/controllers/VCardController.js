@@ -117,16 +117,13 @@ class VCardController {
       vCard["workEmail"] = [data.email];
       let phones = [addDialCode(data.phone)];
       vCard["workPhone"] = phones;
-      vCard["url"] = ["https://www.knightfrank.com"];
-      const parts = data.work_location.split(",").map((part) => part.trim());
-      const postalCode = parts.pop().split("-").pop().trim();
-      const street = parts.join(", ");
+      vCard["url"] = ["https://www.knightfrank.co.in"];
       let addressObj = {
         label: "Work",
-        street: street,
-        city: "Mumbai",
-        stateProvince: "Maharashtra",
-        postalCode: postalCode,
+        street:  data.work_location,
+        city: "",
+        stateProvince: "",
+        postalCode: "",
         countryRegion: "India",
       };
       vCard["workAddress"] = [addressObj];

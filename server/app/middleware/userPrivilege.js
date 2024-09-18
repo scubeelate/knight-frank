@@ -1,6 +1,4 @@
 const Logger = require("../../bootstrap/logger");
-const NodeCache = require("memory-cache");
-const { getSessionId } = require("../helpers/utils");
 const {
   ERROR_CODES,
   ERROR_TYPES,
@@ -8,9 +6,7 @@ const {
 } = require("../helpers/error-codes");
 
 async function userPrivilege(request, response, next, module, permission) {
-  const sessionId = getSessionId(request);
-  let userInfo = NodeCache.get(sessionId);
-
+  let userInfo = request.session.userInfo
   if (userInfo) {
     userInfo = JSON.parse(userInfo);
   }

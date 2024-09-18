@@ -9,7 +9,6 @@ const {
   ERROR_TYPES,
   ERROR_MESSAGES,
 } = require("../helpers/error-codes");
-const NodeCache = require("memory-cache");
 
 const validateOnStore = () => {
   return middleware().use(validate());

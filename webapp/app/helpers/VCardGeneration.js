@@ -106,7 +106,7 @@ function renderProfileMissingHTML() {
                 <div class="custom-card">
                     <div class="flex-box">
                         <div class="logo">
-                            <img src='scube-logo.svg' alt="Logo">
+                            <img src='/scube-logo.svg' alt="Logo">
                         </div>
                         <h1 class="font-semibold text-2xl py-2">[ERROR_TITLE]</h1>
                         <p class="sub-title text-center py-4">[ERROR_MESSAGE]</p>
@@ -125,7 +125,7 @@ function renderProfileMissingHTML() {
 function renderHTML(response, vCardFormattedText,nonce) {
   let meta = JSON.parse(JSON.stringify(response))
   let data = {
-    image: response.image || '',
+    image: response.image_base64 || '',
     name: `${meta.name}`,
     job: meta.designation,
     bio:'',
@@ -743,8 +743,8 @@ function renderHTML(response, vCardFormattedText,nonce) {
     <div class="flex flex-col lg:w-96 mx-auto w-full lg:px-0 px-5 py-5">
 
         <div class="flex flex-col items-center justify-center gap-5 w-full">
-            <img src="logo.svg" alt="logo" class="w-28" />
-            <img src="notch.svg" alt="notch" class="w-full" />
+            <img src="/logo.svg" alt="logo" class="w-28" />
+            <img src="/notch.svg" alt="notch" class="w-full" />
         </div>
 
 
@@ -753,7 +753,7 @@ function renderHTML(response, vCardFormattedText,nonce) {
 
             <div class="flex flex-col text-center items-center justify-center gap-2 abolute top-0 left-0">
 
-                <img src="avatar.svg" alt="avatar" class="w-28 h-28 -mt-16" />
+                <img src="${data.image ? data.image :'/avatar.svg'}" alt="avatar" class="w-28 h-28 -mt-16" />
 
                 <div class="flex flex-col items-center gap-2 pt-4">
                     <p class="text-xl font-medium text-white">${data.name}</p>
@@ -770,7 +770,7 @@ function renderHTML(response, vCardFormattedText,nonce) {
             <button
              onclick="download()"
                 class="w-full border border-[#9A9A9A] text-sm p-3 rounded-lg font-semibold flex items-center justify-center gap-2">
-                <img src="download.svg" alt="download" class="w-6 h-6" />
+                <img src="/download.svg" alt="download" class="w-6 h-6" />
                 Download Contact
             </button>
 
@@ -778,39 +778,33 @@ function renderHTML(response, vCardFormattedText,nonce) {
             <div class="grid grid-cols-4 gap-10 mt-10">
 
                 <div class="flex flex-col gap-2 items-center justify-center text-center">
-                    <img src="call.svg" alt="call" class="w-12 h-12" />
-                    <p class="text-sm font-semibold">
-                     <a  href="tel:${addDialCode(meta.phone)}">  
-                     Call
+                    <a  href="tel:${addDialCode(meta.phone)}">  
+                    <img src="/call.svg" alt="call" class="w-12 h-12" />
                     </a>
-                    </p>
+                    <p class="text-sm font-semibold">Call</p>
                 </div>
 
                 <div class="flex flex-col gap-2 items-center justify-center text-center">
-                    <img src="whatsapp.svg" alt="whatsapp.svg" class="w-12 h-12" />
-                    <p class="text-sm font-semibold">
-                    <a href="whatsapp://send?text=Hi There!&phone=${addDialCode(
+                   <a href="whatsapp://send?text=Hi There!&phone=${addDialCode(
                       data.phone
                     )}">  
-                    Whatsapp
                     </a>
-                    </p>
+                    <img src="/whatsapp.svg" alt="whatsapp.svg" class="w-12 h-12" />
+                    <p class="text-sm font-semibold">Whatsapp</p>
+                 </div>
+
+                <div class="flex flex-col gap-2 items-center justify-center text-center">
+                    <a rel="nofollow" href="mailto:${data.email}">  
+                    <img src="/email.svg" alt="email.svg" class="w-12 h-12" />
+                    </a>
+                    <p class="text-sm font-semibold"> Email </p>
                 </div>
 
                 <div class="flex flex-col gap-2 items-center justify-center text-center">
-                    <img src="email.svg" alt="email.svg" class="w-12 h-12" />
-                    <p class="text-sm font-semibold">
-                     <a rel="nofollow" href="mailto:${data.email}">  
-                     Email
+                     <a href="${generateGoogleMapsLink(data.work_location)}">
+                    <img src="/locate.svg" alt="locate.svg" class="w-12 h-12" />
                     </a>
-                    </p>
-                </div>
-
-                <div class="flex flex-col gap-2 items-center justify-center text-center">
-                    <img src="locate.svg" alt="locate.svg" class="w-12 h-12" />
-                    <p class="text-sm font-semibold">
-                     <a href="${generateGoogleMapsLink(data.work_location)}">Locate</a>
-                    </p>
+                    <p class="text-sm font-semibold">Locate</p>
                 </div>
 
             </div>
@@ -819,21 +813,21 @@ function renderHTML(response, vCardFormattedText,nonce) {
                 <div class="flex flex-col w-full gap-4">
                     <h2 class="text-base font-semibold">Contact Details</h2>
                     <div class="flex items-center gap-2">
-                        <img src="mail-outlined.svg" alt="mail" class="w-5 h-5" />
+                        <img src="/mail-outlined.svg" alt="mail" class="w-5 h-5" />
                         <p class="font-regular text-sm">
                         <a rel="nofollow" href="mailto:${data.email}">${data.email}</a>
                         </p>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <img src="phone-outlined.svg" alt="phone" class="w-5 h-5" />
+                        <img src="/phone-outlined.svg" alt="phone" class="w-5 h-5" />
                         <p class="font-regular text-sm">
                         <a href="tel:${addDialCode(meta.phone)}">${addDialCode(meta.phone)}</a>
                         </p>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <img src="url-outlined.svg" alt="url-outlined.svg" class="w-5 h-5" />
+                        <img src="/url-outlined.svg" alt="url-outlined.svg" class="w-5 h-5" />
                         <p class="font-regular text-sm">
                           <a href="https://www.knightfrank.co.in" target="_blank">https://www.knightfrank.co.in </a>
                         </p>
@@ -846,7 +840,7 @@ function renderHTML(response, vCardFormattedText,nonce) {
                 <div class="flex flex-col w-full gap-4">
                     <h2 class="text-base font-semibold">Address</h2>
                     <div class="flex items-start gap-2">
-                        <img src="address-outlined.svg" alt="address-outlined" class="w-5 h-5" />
+                        <img src="/address-outlined.svg" alt="address-outlined" class="w-5 h-5" />
                         <p class="font-regular text-sm">${data.work_location}</p>
                     </div>
 
@@ -856,29 +850,29 @@ function renderHTML(response, vCardFormattedText,nonce) {
         </div>
 
         <div class="mt-10 flex flex-col">
-            <img src="notch.svg" alt="notch" class="w-full -rotate-180" />
+            <img src="/notch.svg" alt="notch" class="w-full -rotate-180" />
         </div>
 
         <div class="mt-6 flex items-center justify-center gap-4">
             <button>
               <a href="https://www.facebook.com/knightfrankind" target="_blank"> 
-                  <img src="facebook.svg" alt="facebook.svg" class="w-8 h-8" />
+                  <img src="/facebook.svg" alt="facebook.svg" class="w-8 h-8" />
               </a>
             </button>
             <button>
               <a href="https://www.instagram.com/knightfrankindia" target="_blank"> 
-                  <img src="instagram.svg" alt="instagram.svg" class="w-8 h-8" />
+                  <img src="/instagram.svg" alt="instagram.svg" class="w-8 h-8" />
               </a>
             </button>
             <button>
              <a href="https://www.linkedin.com/company/knight-frank-india" target="_blank"> 
-                 <img src="linkedin.svg" alt="linkedin.svg" class="w-8 h-8" />
+                 <img src="/linkedin.svg" alt="linkedin.svg" class="w-8 h-8" />
               </a>
                 
             </button>
             <button>
              <a href="https://twitter.com/KnightFrank_IN" target="_blank"> 
-                 <img src="twitter.svg" alt="twitter.svg" class="w-8 h-8" />
+                 <img src="/twitter.svg" alt="twitter.svg" class="w-8 h-8" />
               </a>
             </button>
         </div>

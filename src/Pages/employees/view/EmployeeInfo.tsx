@@ -55,6 +55,21 @@ const EmployeeInfo = ({ employee, refresh }: any) => {
             </p>
           </div>
         ))}
+         <div
+            className="flex justify-between lg:flex-col lg:justify-start gap-2"
+          >
+            <p className="text-xs text-bluishGray">Image</p>
+            <p className="text-sm text-shadeDarkBlue break-words">
+              {
+                employee.image_base64 ? 
+                <img
+                className="w-20 h-20 rounded"
+                src={employee.image_base64}
+                alt="profile"
+              />  : <>NA</>
+              }
+            </p>
+            </div>
       </div>
     </div>
   );
