@@ -789,9 +789,9 @@ function renderHTML(response, vCardFormattedText,nonce) {
                 <div class="flex flex-col gap-2 items-center justify-center text-center">
                    <a href="whatsapp://send?text=Hi There!&phone=${addDialCode(
                       data.phone
-                    )}">  
-                    </a>
+                    )}">
                     <img src="/whatsapp.svg" alt="whatsapp.svg" class="w-12 h-12" />
+                      </a>
                     <p class="text-sm font-semibold">Whatsapp</p>
                  </div>
 

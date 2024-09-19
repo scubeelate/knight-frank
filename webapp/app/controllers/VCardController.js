@@ -9,6 +9,8 @@ const {
   cardActivityLogEvent,
   generateSignedUrl,
   verifySignedUrl,
+  extractBase64Data,
+  extractMimeType
 } = require("../helpers/VCardGeneration");
 const vCardJS = require("../VCard");
 class VCardController {
