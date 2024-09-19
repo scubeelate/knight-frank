@@ -39,11 +39,11 @@ const api = ({ dispatch }: { dispatch: any }) =>
       } catch (error: any) {
         const { status } = error.response;
         if (status === 401) {
+          logout();
           toast.dismiss(); // i need to hide all toast notification
           toast.error('Session Expired', {
             position: toast.POSITION.TOP_RIGHT,
           });
-          logout();
           window.location.href = '';
         }
         if (onError) {

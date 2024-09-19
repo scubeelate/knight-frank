@@ -4,14 +4,33 @@ const {
   ERROR_TYPES,
   ERROR_MESSAGES,
 } = require("../helpers/error-codes");
+const RoleModule = require("./../models/RoleModule");
+const Permission = require("./../models/Permission");
 
 async function userPrivilege(request, response, next, module, permission) {
-  let userInfo = request.session.userInfo
-  if (userInfo) {
-    userInfo = JSON.parse(userInfo);
+  let formattedPermissions = ''
+  if (request.user) {
+    const modules = await RoleModule.list();
+      const userPermissions = await Permission.permissionByRole(request.user?.role_id);
+
+      formattedPermissions = userPermissions.map((permission) => {
+        const module = modules.find(
+          (module) => module.id === permission.module_id
+        );
+        return {
+          module: module?.name,
+          is_read: permission.is_read,
+          is_write: permission.is_write,
+          is_delete: permission.is_delete,
+          is_update: permission.is_update,
+          slug: module?.slug,
+          parent_id: module?.parent_id,
+          id: permission.module_id,
+        };
+      });
   }
 
-  if (!userInfo) {
+  if (!formattedPermissions) {
     logUnauthorizedError(
       request,
       response,
@@ -23,7 +42,7 @@ async function userPrivilege(request, response, next, module, permission) {
     });
   }
 
-  const moduleMeta = userInfo.permissions.find((x) => x.slug === module);
+  const moduleMeta = formattedPermissions.find((x) => x.slug === module);
 
   if (!moduleMeta || !moduleMeta[permission]) {
     logUnauthorizedError(

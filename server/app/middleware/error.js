@@ -2,6 +2,7 @@ const Logger = require('../../bootstrap/logger');
 const {ERROR_CODES,ERROR_TYPES,ERROR_MESSAGES}    = require('../helpers/error-codes')
 
 module.exports = (error, response) => {
+    console.log(error)
     if(error?.type ==='entity.parse.failed'){
         Logger.error({
             error_type: ERROR_TYPES.VALIDATION_ERROR,

@@ -29,7 +29,7 @@ class EmployeeCardController {
    */
   static async index(request, response) {
     try {
-      const clientPublicKey = request.session.publicKey;
+      const clientPublicKey = request.sessionData.PublicKey;
       if(!clientPublicKey) {
         return response.status(401).send({
           status: false,
@@ -71,7 +71,7 @@ class EmployeeCardController {
 static async show(request, response) {
   try {
   const card_request = request.card_request;
-  const clientPublicKey = request.session.publicKey;
+  const clientPublicKey = request.sessionData.PublicKey;
   if(!clientPublicKey) {
     return response.status(401).send({
       status: false,
@@ -282,6 +282,7 @@ static async show(request, response) {
         data: employee,
       });
     } catch (exception) {
+      console.log(exception,'exception')
       handleErrorDbLogger(
         "Card Request activity info failed",
         exception,

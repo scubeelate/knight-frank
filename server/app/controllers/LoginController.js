@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("./../models/User");
 const RoleModule = require("./../models/RoleModule");
 const Permission = require("./../models/Permission");
+const Session = require("./../models/Sessions");
 const Log = require("../models/Log");
 const {
   ERROR_CODES,
@@ -58,7 +59,7 @@ class LoginController {
         });
       }
        
-       const isAuthenticated = await authenticate(request.body.email , request.body.password);
+      const isAuthenticated = await authenticate(request.body.email , request.body.password);
 
     
       // If passwords do not match, return error
@@ -94,13 +95,7 @@ class LoginController {
           id: permission.module_id,
         };
       });
-      const userInfo = {
-        name: user.name,
-        email: user.username,
-        permissions: formattedPermissions,
-        id: user.id,
-       };
-       request.session.userInfo = JSON.stringify(userInfo)
+      await Session.updateUserIdBySessionId(request.headers['session-id'], user.id)
       // Generate JWT token
       const token = jwt.sign(
         {
@@ -156,7 +151,7 @@ class LoginController {
         message: "Logged out from the application.",
         action_type: "ACTION",
       });
-      request.session.userInfo = ''
+      await Session.deleteByUserId(request.user.id)
       return response.status(200).send({
         message: "Logged out successfully",
       });

@@ -21,6 +21,9 @@ axiosInstance.interceptors.request.use(
       if(localStorage.getItem("X-VALIDATE")) {
         config.headers["x-csrf-token"] =  decryptData(localStorage.getItem("X-VALIDATE"));
       }
+      if(localStorage.getItem("X-SES-ID")) {
+        config.headers["session-id"] =  decryptData(localStorage.getItem("X-SES-ID"));
+      }
     }
     return config;
   },

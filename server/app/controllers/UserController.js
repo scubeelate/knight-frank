@@ -22,7 +22,7 @@ class UserController {
    */
   static async index(request, response) {
     try {
-      const clientPublicKey = request.session.publicKey;
+      const clientPublicKey = request.sessionData.PublicKey;
       if (!clientPublicKey) {
         return response.status(401).send({
           status: false,
@@ -74,7 +74,7 @@ class UserController {
         "created_at",
       ]);
 
-      const clientPublicKey = request.session.publicKey;
+      const clientPublicKey = request.sessionData.PublicKey;
       if (!clientPublicKey) {
         return response.status(401).send({
           status: false,

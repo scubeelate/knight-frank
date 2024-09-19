@@ -43,7 +43,10 @@ function exportPrivateKeyAsPEM(privateKey:any) {
           const response = await axiosInstance.post(`handshake`, { publicKey: pemPublicKey });
           const serverPublicKey = response.data.serverPublicKey;
           const CsrfToken = response.data.csrfToken;
+          const sessionId = response.data.sessionId;
           localStorage.setItem('X-VALIDATE', encryptData(CsrfToken));
+          localStorage.setItem('X-SES-ID', encryptData(sessionId));
+  
           dispatch(setServerPublicKey(serverPublicKey));
           onInitialized()
       

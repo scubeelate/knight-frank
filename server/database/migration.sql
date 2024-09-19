@@ -134,3 +134,14 @@ CREATE TABLE logs (
     updated_at DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_logs_user_id FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Table: sessions
+CREATE TABLE Sessions (
+    SessionId NVARCHAR(255) PRIMARY KEY,
+    UserId INT NULL, 
+    PublicKey NVARCHAR(MAX),
+    CsrfToken NVARCHAR(255),
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE(),
+    CONSTRAINT FK_sessions_user_id FOREIGN KEY (UserId) REFERENCES users(id) -- Assuming users table has an 'id' column
+);

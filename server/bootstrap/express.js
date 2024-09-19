@@ -9,8 +9,8 @@ const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 const Logger = require("./logger");
 const morgan = require("morgan");
-const { getCsrfTokenId, generateCsrfToken } = require('../app/helpers/utils')
-const session = require('express-session');
+const { generateCsrfToken } = require('../app/helpers/utils')
+const sessionModel = require("../app/models/Sessions");
 
 const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -23,7 +23,7 @@ const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
     format: "pem",
   },
 });
-const allowedOrigins = ["http://localhost:3000", 'https://10.164.58.214'];
+const allowedOrigins = ["http://localhost:3000", 'https://10.164.58.214',"http://localhost:3001"];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -58,31 +58,19 @@ module.exports = (app) => {
   app.get('/', (req, res, next) => {
     return res.send('Api Server is available.')
   })
-  const sessionHandler = session({ 
-    secret: process.env.APP_SECRET_KEY,
-    resave: false, 
-    saveUninitialized: false,
-    cookie: { 
-      secure: true,
-      sameSite:'lax', 
-      maxAge: 1000 * 60 * 60 * 24, // Session expiration time (e.g., 1 day)
-  },
-   proxy:true
-  })
-  app.use(function(req,res,next){
-    if(req.url.indexOf('/api/') === 0){
-      return sessionHandler(req,res,next)
-    }else {
-      next()
-    }
-  });
 
-  app.use((req, res, next) => {
-
-    if (req.session && !req.session.csrfToken) {
-      req.session.csrfToken = generateCsrfToken();
+  app.use(async (req, res, next) => {
+    const sessionId = req.headers['session-id'];
+    if (sessionId) {
+      const sessionData = await sessionModel.getById(sessionId);
+      if (sessionData) {
+        req.sessionData = sessionData;
+      } else {
+        return res.status(403).send('Invalid session.');
+      }
+    } else if(!req.url.includes('web-services') && !req.url.includes('handshake')) {
+      return res.status(403).send('No session ID provided.');
     }
-    res.locals.csrfToken = req.session.csrfToken;
     next();
   });
 
@@ -106,17 +94,61 @@ module.exports = (app) => {
   app.use(errorMiddleware);
 };
 
-function handleHandshake(req, res) {
+async function handleHandshake(req, res) {
   const { publicKey } = req.body;
-  const clientCsrfId = getCsrfTokenId(req);
-  req.session.csrfToken = clientCsrfId
-  req.session.publicKey = publicKey
-  const serverPublicKey =  req.app.locals.publicKey
-  res.json({ serverPublicKey, csrfToken:  req.session.csrfToken });
+  const sessionId = req.headers['session-id']; // Assuming the session ID is sent in headers
+
+  if (!sessionId) {
+    // If there's no session ID in the headers, create a new session
+    const newSessionId = uuidv4();
+    const csrfToken = generateCsrfToken();
+    
+    await sessionModel.create({
+      SessionId: newSessionId,
+      PublicKey: publicKey,
+      CsrfToken: csrfToken,
+    });
+    
+    return res.json({ 
+      serverPublicKey: req.app.locals.publicKey, 
+      csrfToken, 
+      sessionId: newSessionId 
+    });
+  } else {
+    // Check if the session already exists
+    const existingSession = await sessionModel.getById(sessionId);
+    
+    if (existingSession) {
+      // Update the existing session's PublicKey and CsrfToken
+      const csrfToken = generateCsrfToken();
+      await sessionModel.updateKeyAndCsrfBySessionId(sessionId, publicKey,csrfToken)
+      return res.json({ 
+        serverPublicKey: req.app.locals.publicKey, 
+        csrfToken, 
+        sessionId 
+      });
+    } else {
+      // If the session doesn't exist, create a new session
+      const newSessionId = uuidv4();
+      const csrfToken = generateCsrfToken();
+      
+      await sessionModel.create({
+        SessionId: newSessionId,
+        PublicKey: publicKey,
+        CsrfToken: csrfToken,
+      });
+      
+      return res.json({ 
+        serverPublicKey: req.app.locals.publicKey, 
+        csrfToken, 
+        sessionId: newSessionId 
+      });
+    }
+  }
 }
 
 function validateCsrfToken(req, res, next) {
-  const csrfToken =  req.session.csrfToken
+  const csrfToken = req.sessionData?.CsrfToken;
   const csrfHeader = req.headers['x-csrf-token'];
   if (req.method !== 'GET' && !req.url.includes('web-services') && csrfToken !== csrfHeader) {
     return res.status(403).send({

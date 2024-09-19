@@ -22,7 +22,7 @@ class EmployeeController {
  */
 static async index(request, response) {
   try {
-    const clientPublicKey = request.session.publicKey;
+    const clientPublicKey = request.sessionData.PublicKey;
     if(!clientPublicKey) {
       return response.status(401).send({
         status: false,
@@ -98,8 +98,8 @@ static async index(request, response) {
         });
       }
      
-       let user = await fetchUserByEmailWithRetry(request.body.email);
-      
+      let user = await fetchUserByEmailWithRetry(request.body.email);
+  
       if (user) {
         if (Number(user.userAccountControl) === 514)
           return response.status(400).send({
@@ -175,7 +175,7 @@ static async index(request, response) {
 static async show(request, response) {
   try {
     const employee = request.employee;
-    const clientPublicKey = request.session.publicKey;
+    const clientPublicKey = req.sessionData.PublicKey;
     if(!clientPublicKey) {
       return response.status(401).send({
         status: false,
