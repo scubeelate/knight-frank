@@ -115,7 +115,7 @@ class VCardController {
       const data = employee;
       vCard["firstName"] = data.name;
       vCard["organization"] = "Knight Frank (India) Pvt. Ltd";
-      vCard["title"] = `${data.designation}  ${data.department}`;
+      vCard["title"] = `${data.designation}`;
       vCard["workEmail"] = [data.email];
       let phones = [addDialCode(data.phone)];
       vCard["workPhone"] = phones;
