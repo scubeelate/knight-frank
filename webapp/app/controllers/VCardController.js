@@ -128,8 +128,12 @@ class VCardController {
       };
       vCard["workAddress"] = [addressObj];
 
-      if (data.image_base64)
-        vCard.photo.embedFromString(data.image_base64, "image/png");
+        if (data.image_base64) {
+          let url = extractBase64Data(data.image_base64)
+          let type = extractMimeType(data.image_base64)
+          vCard.photo.embedFromString(url, type);
+        }
+
       html = renderHTML(data, vCard.getFormattedString(),response.locals.nonce)
       await cardActivityLogEvent({
         card_id: request.params.id,

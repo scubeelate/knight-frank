@@ -7,15 +7,14 @@ const agent = new https.Agent({
 });
 
 function addDialCode(phoneNumber) {
-  const regex = /^\+91/;
-  // Check if the phone number already has the dial code
-  if (!regex.test(phoneNumber)) {
-    // Add the dial code if not present
-    phoneNumber = "+91" + phoneNumber;
+    phoneNumber = phoneNumber.replace(/\s+/g, '');
+  
+    const regex = /^\+91/;
+    if (!regex.test(phoneNumber)) {
+      phoneNumber = "+91" + phoneNumber;
+    }
+    return phoneNumber;
   }
-  return phoneNumber;
-}
-
 function generateGoogleMapsLink(address) {
   const baseUrl = 'https://www.google.com/maps/search/?api=1&query=';
   
@@ -727,6 +726,10 @@ function renderHTML(response, vCardFormattedText,nonce) {
                 padding-right: 0px;
             }
         }
+        .image-border {
+          border-radius: 10px;
+          border:4px solid white;
+        }
     </style>
 </head>
 <script type="text/javascript"  nonce='${nonce}'>
@@ -753,7 +756,7 @@ function renderHTML(response, vCardFormattedText,nonce) {
 
             <div class="flex flex-col text-center items-center justify-center gap-2 abolute top-0 left-0">
 
-                <img src="${data.image ? data.image :'/avatar.svg'}" alt="avatar" class="w-28 h-28 -mt-16" />
+                <img src="${data.image ? data.image :'/avatar.svg'}" alt="avatar" class="w-28 h-28 -mt-16 ${data.image ? 'image-border':''}" />
 
                 <div class="flex flex-col items-center gap-2 pt-4">
                     <p class="text-xl font-medium text-white">${data.name}</p>
@@ -783,7 +786,6 @@ function renderHTML(response, vCardFormattedText,nonce) {
                     </a>
                     <p class="text-sm font-semibold">Call</p>
                 </div>
-
                 <div class="flex flex-col gap-2 items-center justify-center text-center">
                    <a href="whatsapp://send?text=Hi There!&phone=${addDialCode(
                       data.phone
@@ -984,6 +986,23 @@ function getClientId(req) {
     )
     .digest("hex");
 }
+function extractMimeType(base64String) {
+    const match = base64String.match(/^data:(.*);base64,/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    return null;
+  }
+  
+  function extractBase64Data(dataUrl) {
+    const base64Data = dataUrl.split(';base64,')[1];
+    if (base64Data) {
+      return base64Data;
+    } else {
+      console.error("Invalid data URL format.");
+      return null;
+    }
+  }
 
 module.exports = {
   renderHTML,
@@ -994,4 +1013,6 @@ module.exports = {
   cardActivityLogEvent,
   generateSignedUrl,
   verifySignedUrl,
+  extractMimeType,
+  extractBase64Data
 };
